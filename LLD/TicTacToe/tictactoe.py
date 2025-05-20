@@ -1,16 +1,17 @@
-import deque from deque
+from collections import deque
+from piece import PieceX, PieceO
 
-class Game:
+class TicTacToe:
   def __init__(self,board,players):
     self.board = board
     self.players = deque(players)
     self.winner = None
 
-  def initializeGame():
+  def initializeGame(self):
     # Initialize Piece or get players and their pieces in arguments
     
-    PieceX = new PieceX('X');
-    PieceO = new PieceX('O');
+    PieceX = PieceX()
+    PieceO = PieceX()
     
     # Assign Piece to players
     PlayerOne , PlayerTwo = self.players
@@ -20,7 +21,7 @@ class Game:
 
     
 
-  def startGame():
+  def startGame(self):
     # Initialize the game
     self.initializeGame();
     
@@ -32,7 +33,16 @@ class Game:
       print(f"{playerWithTurn.name} has turn! please select the position seperated with space.");
 
       # Get row and cols from player
-      number(row) , number(col) = input().split(" ")
+      try:
+          row, col = map(int, input().split())
+      except Exception:
+          print("Invalid input! Please enter two numbers.")
+          self.players.appendleft(playerWithTurn)
+          continue
+      if row < 0 or row >= self.size or col < 0 or col >= self.size or self.board.board[row][col] is not None:
+          print("Invalid move! Try again.")
+          self.players.appendleft(playerWithTurn)
+          continue
       
       # Check if position is empty
       if (self.board[row][col]):
@@ -49,7 +59,7 @@ class Game:
       isWinner = self.checkWinner(row,col,playerWithTurn.piece)
       if isWinner:
         self.winner = playerWithTurn;
-        print(f"{winner.name} is the Winner !!!");
+        print(f"{self.winner.name} is the Winner !!!");
 
       
       # Check if board has empty cells
@@ -62,7 +72,7 @@ class Game:
       
       
 
-  def checkWinner(curr_row,curr_col,piece):
+  def checkWinner(self,curr_row,curr_col,piece):
     # check horizontal
     horizontal = True
     for col in range(self.size):

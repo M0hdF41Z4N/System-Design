@@ -5,14 +5,15 @@ class PieceType(Enum): # This can be moved to seperated file as well.
     O = 'O'
 
 class Piece:
-  def __init__(self,pieceType):
-    self.pieceType =  pieceType
-
+    def __init__(self, pieceType):
+        self.pieceType = pieceType
+    def __str__(self):
+        return self.pieceType.value
 
 class PieceO(Piece):
-  def __init__():
-    super.__init__(pieceType.O)
+    def __init__(self):
+        super().__init__(PieceType.O)
 
 class PieceX(Piece):
-  def __init__():
-    super.__init__(pieceType.X)
+    def __init__(self):
+        super().__init__(PieceType.X)

@@ -1,6 +1,6 @@
 from enum import Enum
 
-class PieceType(Enum):
+class PieceType(Enum): # This can be moved to seperated file as well.
     X = 'X'
     O = 'O'
 

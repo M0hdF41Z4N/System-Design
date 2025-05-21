@@ -1,23 +1,29 @@
 from collections import deque
 from piece import PieceX, PieceO
+from player import Player
+from board import Board
 
 class TicTacToe:
-  def __init__(self,board,players):
+  def __init__(self, board=None, players=None):
     self.board = board
-    self.players = deque(players)
+    self.players = deque(players) if players else deque()
     self.winner = None
 
   def initializeGame(self):
     # Initialize Piece or get players and their pieces in arguments
     
-    PieceX = PieceX()
-    PieceO = PieceX()
+    crossPiece = PieceX()
+    KnotPiece = PieceO()
     
     # Assign Piece to players
-    PlayerOne , PlayerTwo = self.players
-    
-    PlayerOne.setPlayingPiece(PieceX)
-    PlayerTwo.setPlayingPiece(PieceO)
+    PlayerOne , PlayerTwo = Player("Bob",crossPiece), Player("Balli",KnotPiece)
+
+    self.players.append(PlayerOne)
+    self.players.append(PlayerTwo)
+    self.size = 3
+    self.board = Board(self.size)
+    self.board.printBoard()
+    print("Game Initialized! Players are ready to play!")
 
     
 
@@ -25,10 +31,18 @@ class TicTacToe:
     # Initialize the game
     self.initializeGame();
     
-    isWinner = None
-    while not isWinner:
+    noWinner = True
+    while noWinner:
       # Get player which has turn
       playerWithTurn = self.players.popleft()
+
+      # Check if board has empty cells
+      if not self.board.getFreeCells():
+        noWinner = False
+        continue
+
+      # Print the board
+      self.board.printBoard()
 
       print(f"{playerWithTurn.name} has turn! please select the position seperated with space.");
 
@@ -45,90 +59,56 @@ class TicTacToe:
           continue
       
       # Check if position is empty
-      if (self.board[row][col]):
+      if (self.board.board[row][col]):
         self.players.appendleft(playerWithTurn)
         print("Invalid Input! Try Again")
         continue
 
 
       # Mark the board with piece
-      self.board[row][col] = playerWithTurn.piece
+      self.board.addPiece(row,col,playerWithTurn.piece)
 
       
       # Check Winner
-      isWinner = self.checkWinner(row,col,playerWithTurn.piece)
-      if isWinner:
+      winner = self.checkWinner(row,col,playerWithTurn.piece)
+      if winner:
         self.winner = playerWithTurn;
-        print(f"{self.winner.name} is the Winner !!!");
-
+        return self.winner.name
       
-      # Check if board has empty cells
-      if not self.board.getFreeCells():
-        print("It's a Tie")
-
       # toggle the player
       self.players.append(playerWithTurn)
+    return "No Winner! Game is Draw!"
 
       
       
 
-  def checkWinner(self,curr_row,curr_col,piece):
-    # check horizontal
-    horizontal = True
-    for col in range(self.size):
-      if self.board[curr_row][col] != piece:
-        horizontal = False
-        break
+      
 
+      
+      
+
+  def checkWinner(self, curr_row, curr_col, piece):
+    
+    # Check horizontal
+    horizontal = all(str(self.board.board[curr_row][col]) == str(piece) for col in range(self.size))
     if horizontal:
-      return horizontal
-      
-    # check vertical
-    vertical = True
-    for row in range(self.size):
-          if self.board[row][curr_col] != piece:
-            vertical = False
-            break
-    
+      return True
+
+    # Check vertical
+    vertical = all(str(self.board.board[row][curr_col]) == str(piece) for row in range(self.size))
     if vertical:
-      return vertical
+      return True
 
+    # Check left diagonal (top-left to bottom-right)
+    if curr_row == curr_col:
+      left_diag = all(str(self.board.board[i][i]) == str(piece) for i in range(self.size))
+      if left_diag:
+        return True
 
-    leftDiag = True
-    # check left diagonal
-    row , col = curr_row , curr_col
-    while row < self.size and col < self.size:
-      if not self.board[row][col] != piece:
-            leftDiag = False
-            break
-      row+=1
-      col+=1
-    row , col =  curr_row , curr_col
-    while row >= 0 and col >= 0:
-      if not self.board[row][col] != piece:
-            leftDiag = False
-            break
-      row-=1
-      col-=1
-    if leftDiag:
-      return leftDiag
-    # check right diagonal
-    rightDiag = True
-    row , col = curr_row , curr_col
-    while row >= 0 and col < self.size:
-      if not self.board[row][col] != piece:
-            rightDiag = False
-            break
-      row-=1
-      col+=1
-    row , col =  curr_row , curr_col
-    while row < self.size and col >= 0:
-      if not self.board[row][col] != piece:
-            rightDiag = False
-            break
-      row+=1
-      col-=1
-    if rightDiag:
-      return rightDiag
-    return False
-    
+    # Check right diagonal (top-right to bottom-left)
+    if curr_row + curr_col == self.size - 1:
+      right_diag = all(str(self.board.board[i][self.size - 1 - i]) == str(piece) for i in range(self.size))
+      if right_diag:
+        return True
+
+    return False 

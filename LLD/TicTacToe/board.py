@@ -5,7 +5,11 @@ class Board:
         self.board = [[None for _ in range(size)] for _ in range(size)]
 
     def addPiece(self, row, col, piece):
-        self.board[row][col] = piece
+        # Add the piece to the board
+        if self.board[row][col] is None:
+            self.board[row][col] = piece
+            return True
+        return False
 
     def getFreeCells(self):
         count = 0
